@@ -1,0 +1,17 @@
+{
+    "name": "lumite-studios/action",
+    "description": "An action class",
+    "type": "library",
+    "require": {
+        "php": "^8.0",
+        "laravel/laravel": "^8.5",
+        "illuminate/auth": "^8.40",
+        "illuminate/support": "^8.40",
+        "illuminate/validation": "^8.40"
+    },
+    "autoload": {
+        "psr-4": {
+            "LumiteStudios\\Action\\": "src"
+        }
+    }
+}
