@@ -88,7 +88,7 @@ trait Validation
 	/**
 	 * Create a validator instance.
 	 *
-	 * @return Validator
+	 * @return \Illuminate\Validation\Validator
 	 */
 	private function createValidator(array $data = null): Validator
 	{
@@ -103,7 +103,7 @@ trait Validation
 	/**
 	 * Set the validator instance.
 	 *
-	 * @param Validator $validator
+	 * @param \Illuminate\Validation\Validator $validator
 	 * @return void
 	 */
 	private function setValidatorInstance(array $data = null)

@@ -8,7 +8,7 @@ trait Authorization
 	/**
 	 * Attempt to resolve the authorization.
 	 *
-	 * @return $this
+	 * @return \LumiteStudios\Action\Concerns\Authorization
 	 */
     private function resolveAuthorization()
     {

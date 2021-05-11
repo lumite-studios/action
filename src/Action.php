@@ -22,7 +22,9 @@ abstract class Action
 	private $errors;
 
 	/**
-	 * Constructor.
+	 * Create a new action instance.
+     *
+     * @param array $attributes
 	 */
 	public function __construct(array $attributes = null)
 	{
