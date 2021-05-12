@@ -113,7 +113,7 @@ trait Validation
 			$this->errors = $this->validator->errors();
 
 			if($this->validator->passes()) {
-				$this->resolveAction($this->validator->validated());
+				$this->resolveAction($this->validated());
 			}
 		}
 	}
