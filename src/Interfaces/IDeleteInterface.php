@@ -7,7 +7,7 @@ interface IDeleteInterface
 	 * Delete a resource.
 	 *
 	 * @param array $attributes 	An array of attributes.
-	 * @return boolean
+	 * @return mixed
 	 */
 	public function delete(array $attributes);
 }

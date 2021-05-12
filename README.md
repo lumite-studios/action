@@ -45,20 +45,20 @@ use LumiteStudios\Action\Interfaces\IRequestInterface;
 class CreateUserAction extends Action implements ICreateInterface, IRequestInterface
 {
     /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
+        * Determine if the user is authorized to make this request.
+        *
+        * @return bool
+        */
     public function authorize(): bool
     {
         return auth()->check();
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
+        * Get the validation rules that apply to the request.
+        *
+        * @return array
+        */
     public function rules(): array
     {
         return [
@@ -67,11 +67,11 @@ class CreateUserAction extends Action implements ICreateInterface, IRequestInter
     }
 
     /**
-     * Create a new resource.
-     *
-     * @param array $attributes 	An array of attributes.
-     * @return mixed
-     */
+        * Create a new resource.
+        *
+        * @param array $attributes 	An array of attributes.
+        * @return mixed
+        */
     public function create(array $attributes)
     {
         $user = new User();
@@ -82,11 +82,11 @@ class CreateUserAction extends Action implements ICreateInterface, IRequestInter
     }
 
     /**
-     * Get any associated errors.
-     *
-     * @param array $attributes 	An array of attributes.
-     * @return void
-     */
+        * Get any associated errors.
+        *
+        * @param array $attributes 	An array of attributes.
+        * @return void
+        */
     protected function errors(array $attributes): void
     {
         //
@@ -104,20 +104,20 @@ use LumiteStudios\Action\Interfaces\IRequestInterface;
 class EditUserAction extends Action implements IEditInterface, IRequestInterface
 {
     /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
+        * Determine if the user is authorized to make this request.
+        *
+        * @return bool
+        */
     public function authorize(): bool
     {
         return auth()->check();
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
+        * Get the validation rules that apply to the request.
+        *
+        * @return array
+        */
     public function rules(): array
     {
         return [
@@ -128,12 +128,12 @@ class EditUserAction extends Action implements IEditInterface, IRequestInterface
     }
 
     /**
-	 * Edit a resource.
-	 *
-	 * @param array $attributes 	An array of attributes.
-	 * @return mixed
-	 */
-	public function edit(array $attributes)
+        * Edit a resource.
+        *
+        * @param array $attributes 	An array of attributes.
+        * @return mixed
+        */
+    public function edit(array $attributes)
     {
         $user = $this->fetchUser($attributes['user_id']);
 
@@ -143,22 +143,22 @@ class EditUserAction extends Action implements IEditInterface, IRequestInterface
     }
 
     /**
-     * Fetch a user using an id.
-     *
-     * @param int $user_id
-     * @return User
-     */
+        * Fetch a user using an id.
+        *
+        * @param int $user_id
+        * @return User
+        */
     private function fetchUser(int $user_id): User
     {
         return User::where('id', '=', $user_id)->first();
     }
 
     /**
-     * Get any associated errors.
-     *
-     * @param array $attributes 	An array of attributes.
-     * @return void
-     */
+        * Get any associated errors.
+        *
+        * @param array $attributes 	An array of attributes.
+        * @return void
+        */
     protected function errors(array $attributes): void
     {
         //
@@ -176,20 +176,20 @@ use LumiteStudios\Action\Interfaces\IRequestInterface;
 class DeleteUserAction extends Action implements IDeleteInterface, IRequestInterface
 {
     /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
+        * Determine if the user is authorized to make this request.
+        *
+        * @return bool
+        */
     public function authorize(): bool
     {
         return auth()->check();
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
+        * Get the validation rules that apply to the request.
+        *
+        * @return array
+        */
     public function rules(): array
     {
         return [
@@ -200,12 +200,12 @@ class DeleteUserAction extends Action implements IDeleteInterface, IRequestInter
     }
 
     /**
-	 * Delete a resource.
-	 *
-	 * @param array $attributes 	An array of attributes.
-	 * @return boolean
-	 */
-	public function delete(array $attributes)
+        * Delete a resource.
+        *
+        * @param array $attributes 	An array of attributes.
+        * @return mixed
+        */
+    public function delete(array $attributes)
     {
         $user = $this->fetchUser($attributes['user_id']);
         $user->delete();
@@ -214,22 +214,22 @@ class DeleteUserAction extends Action implements IDeleteInterface, IRequestInter
     }
 
     /**
-     * Fetch a user using an id.
-     *
-     * @param int $user_id
-     * @return User
-     */
+        * Fetch a user using an id.
+        *
+        * @param int $user_id
+        * @return User
+        */
     private function fetchUser(int $user_id): User
     {
         return User::where('id', '=', $user_id)->first();
     }
 
     /**
-     * Get any associated errors.
-     *
-     * @param array $attributes 	An array of attributes.
-     * @return void
-     */
+        * Get any associated errors.
+        *
+        * @param array $attributes 	An array of attributes.
+        * @return void
+        */
     protected function errors(array $attributes): void
     {
         //
