@@ -5,8 +5,10 @@ use LumiteStudios\Action\Action;
 use Illuminate\Http\RedirectResponse;
 use LumiteStudios\Action\Tests\TestCase;
 use Illuminate\Auth\Access\AuthorizationException;
+use LumiteStudios\Action\Interfaces\IEditInterface;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use LumiteStudios\Action\Interfaces\ICreateInterface;
+use LumiteStudios\Action\Interfaces\IDeleteInterface;
 use LumiteStudios\Action\Interfaces\IRequestInterface;
 
 class ActionTest extends TestCase
@@ -117,9 +119,37 @@ class ActionTest extends TestCase
 	{
 		$action = new Class extends Action implements ICreateInterface {
 			protected function errors(array $attributes): void {}
-			public function create(array $attributes) { return; }
+			public function create(array $attributes) { return 'create'; }
 		};
 
-		$this->assertTrue(method_exists($action, 'handle'));
+		$state = $action->handle();
+
+        $this->assertEquals('create', $state);
+	}
+
+	/** @test */
+	public function it_can_handle_edit_action()
+	{
+		$action = new Class extends Action implements IEditInterface {
+			protected function errors(array $attributes): void {}
+			public function edit(array $attributes) { return 'edit'; }
+		};
+
+		$state = $action->handle();
+
+        $this->assertEquals('edit', $state);
+	}
+
+	/** @test */
+	public function it_can_handle_delete_action()
+	{
+		$action = new Class extends Action implements IDeleteInterface {
+			protected function errors(array $attributes): void {}
+			public function delete(array $attributes) { return 'delete'; }
+		};
+
+		$state = $action->handle();
+
+        $this->assertEquals('delete', $state);
 	}
 }
