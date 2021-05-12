@@ -1,10 +1,15 @@
-# Action
+# lumite-studios/action
 
 ## Documentation
 
 ### Install
 ```bash
 composer require lumite-studios/action
+```
+
+### Testing
+``` bash
+composer test
 ```
 
 ### Usage

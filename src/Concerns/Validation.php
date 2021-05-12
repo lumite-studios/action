@@ -94,7 +94,7 @@ trait Validation
 	{
 		$data = $data ?? $this->getAllRequestData();
 		$rules = method_exists($this, 'rules') ? $this->rules() : [];
-		$messages = method_exists($this, 'messages') ? $this->messages() : __('core::globals.validation');
+		$messages = method_exists($this, 'messages') ? $this->messages() : [];
 		$attributes = method_exists($this, 'attributes') ? $this->attributes() : [];
 
 		return ValidatorFacade::make($data, $rules, $messages, $attributes);
