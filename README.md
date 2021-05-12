@@ -1,5 +1,8 @@
 # lumite-studios/action
 
+![PHP ^8.0](https://img.shields.io/badge/PHP-%5E8.0-787CB5?style=for-the-badge&logo=php)
+[![codecov](https://img.shields.io/codecov/c/github/lumite-studios/action/main?label=codecov&style=for-the-badge&token=JLOQF31K23)](https://codecov.io/gh/lumite-studios/action)
+
 ## Documentation
 
 ### Install
