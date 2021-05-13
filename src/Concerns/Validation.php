@@ -1,8 +1,8 @@
 <?php
 namespace LumiteStudios\Action\Concerns;
 
-use Illuminate\Support\Facades\Validator as ValidatorFacade;
 use Illuminate\Validation\Validator;
+use Illuminate\Support\Facades\Validator as ValidatorFacade;
 
 trait Validation
 {
@@ -114,7 +114,9 @@ trait Validation
 
 			if($this->validator->passes()) {
 				$this->resolveAction($this->validated());
-			}
+			} else {
+                $this->failedValidation();
+            }
 		}
 	}
 }

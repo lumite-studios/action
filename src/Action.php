@@ -9,6 +9,8 @@ use LumiteStudios\Action\Interfaces\ISaveInterface;
 use LumiteStudios\Action\Interfaces\ICreateInterface;
 use LumiteStudios\Action\Interfaces\IDeleteInterface;
 use LumiteStudios\Action\Interfaces\IRequestInterface;
+use LumiteStudios\Action\Exceptions\ValidationException;
+use Illuminate\Validation\ValidationException as IValidationException;
 
 abstract class Action
 {
@@ -70,7 +72,7 @@ abstract class Action
 	 */
     public function failedValidation()
     {
-        return redirect()->back()->withErrors($this->getErrors());
+        throw new ValidationException($this->getErrors());
 	}
 
 	/**
@@ -130,7 +132,7 @@ abstract class Action
 	 * @param array $attributes
 	 * @return void
 	 */
-	private function resolveAction(array $attributes = null): void
+	private function resolveAction(array $attributes = []): void
 	{
 		$attributes = $attributes ?? $this->getAllRequestData();
 		$this->errors($attributes);
