@@ -3,20 +3,32 @@ namespace LumiteStudios\Action\Concerns;
 
 use Illuminate\Auth\Access\AuthorizationException;
 
-trait Authorization
+trait HandleRequest
 {
 	/**
-	 * Attempt to resolve the authorization.
+	 * Whether the request is authorized.
 	 *
-	 * @return \LumiteStudios\Action\Concerns\Authorization
+	 * @return bool
 	 */
-    private function resolveAuthorization()
+	abstract protected function authorize(): bool;
+
+	/**
+	 * Get the validation rules that apply to the request.
+	 *
+	 * @return array
+	 */
+	abstract protected function rules(): array;
+
+	/**
+	 * Attempt to resolve the request data.
+	 *
+	 * @return void
+	 */
+    protected function resolveRequest(): void
     {
 		if(!$this->passesAuthorization()) {
             $this->failedAuthorization();
         }
-
-        return $this;
 	}
 
 	/**
@@ -34,8 +46,8 @@ trait Authorization
 	 *
 	 * @throws \Illuminate\Auth\Access\AuthorizationException
 	 */
-    protected function failedAuthorization(): AuthorizationException
+    public function failedAuthorization()
     {
-        throw new AuthorizationException('This action is unauthorized.');
+        throw new AuthorizationException();
     }
 }

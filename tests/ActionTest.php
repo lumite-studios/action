@@ -2,64 +2,73 @@
 namespace LumiteStudios\Action\Tests;
 
 use LumiteStudios\Action\Action;
-use Illuminate\Http\RedirectResponse;
-use LumiteStudios\Action\Tests\TestCase;
-use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Validation\Validator;
+use LumiteStudios\Action\Concerns\HandleErrors;
+use LumiteStudios\Action\Concerns\HandleRequest;
 use LumiteStudios\Action\Interfaces\IEditInterface;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use LumiteStudios\Action\Interfaces\ISaveInterface;
 use LumiteStudios\Action\Interfaces\ICreateInterface;
 use LumiteStudios\Action\Interfaces\IDeleteInterface;
-use LumiteStudios\Action\Interfaces\IRequestInterface;
 
 class ActionTest extends TestCase
 {
 	/** @test */
-	public function it_does_have_empty_message_bag_before_resolution()
+	public function it_does_create_validator_in_constructor()
 	{
-		$action = new Class extends Action {
-			protected function errors(array $attributes): void {}
-		};
+		$action = new Class extends Action {};
 
-		$this->assertTrue($action->getErrors()->isEmpty(), 'The errors on an Action should be empty at start.');
+		$this->assertInstanceOf(Validator::class, $action->getValidator(), 'Action must instantiate a validator in the constructor.');
 	}
 
 	/** @test */
-	public function it_can_add_error()
+	public function it_passes_without_errors()
+	{
+		$action = new Class extends Action {};
+
+		$this->assertTrue(method_exists($action, 'fails'), 'An Action must have a "fails" method.');
+		$this->assertTrue(method_exists($action, 'passes'), 'An Action must have a "passes" method.');
+		$this->assertFalse($action->fails());
+		$this->assertTrue($action->passes());
+	}
+
+	/** @test */
+	public function it_can_add_error_with_handle_errors_trait()
 	{
 		$action = new Class extends Action {
+			use HandleErrors;
 			protected function errors(array $attributes): void {}
 		};
-
 		$key = 'error_key';
 		$value = 'error_value';
 
 		$action->addError($key, $value);
 
-		$this->assertCount(1, $action->getErrors(), 'Failed to add an error to an Action.');
-		$this->assertTrue($action->getErrors()->has($key), 'Could not fetch an error by its key.');
-		$this->assertEquals($action->getErrors()->get($key)[0], $value, 'The error value did not match the added value.');
+		$this->assertCount(1, $action->getErrors(), 'The Action errors should contain an added error.');
+		$this->assertTrue($action->getErrors()->has($key), 'The Action errors should contain the added error key.');
+		$this->assertEquals($value, $action->getErrors()->get($key)[0], 'The Action errors should contain the added error value.');
 	}
 
 	/** @test */
-	public function it_creates_redirect_if_error_added()
+	public function it_throws_validation_exception_if_error_added()
 	{
-		$action = new Class extends Action {
-			protected function errors(array $attributes): void {
-				$this->addError('test', 'test');
-			}
-		};
-
-		$this->assertInstanceOf(RedirectResponse::class, $action->failedValidation(), 'A failed validation check should redirect.');
+		$this->assertThrows(\Illuminate\Validation\ValidationException::class, function() {
+			$action = new Class extends Action {
+				use HandleErrors;
+				protected function errors(array $attributes): void {
+					$this->addError('test', 'test');
+				}
+			};
+		});
 	}
 
 	/** @test */
-	public function it_throws_exception_if_action_has_authorization_that_fails()
+	public function it_throws_authorization_exception_if_authorize_fails()
 	{
-		$this->assertThrows(AuthorizationException::class, function() {
-			$action = new Class extends Action implements IRequestInterface {
-				protected function errors(array $attributes): void {}
-				public function authorize(): bool { return false; }
-				public function rules(): array { return []; }
+		$this->assertThrows(\Illuminate\Auth\Access\AuthorizationException::class, function() {
+			$action = new Class extends Action {
+				use HandleRequest;
+				protected function authorize(): bool { return false; }
+				protected function rules(): array { return []; }
 			};
 		});
 	}
@@ -67,58 +76,46 @@ class ActionTest extends TestCase
 	/** @test */
 	public function it_can_pass_authorization()
 	{
-		$action = new Class extends Action implements IRequestInterface {
-			protected function errors(array $attributes): void {}
-			public function authorize(): bool { return true; }
-			public function rules(): array { return []; }
+		$action = new Class extends Action {
+			use HandleRequest;
+			protected function authorize(): bool { return true; }
+			protected function rules(): array { return []; }
 		};
 
-		$this->assertTrue($action->passesAuthorization(), 'Failed to pass authorization.');
+		$this->assertTrue($action->passesAuthorization(), 'An Action must be able to pass authorization.');
 	}
 
 	/** @test */
-	public function it_can_fail_validation()
+	public function it_throws_validation_exception_if_rules_failed()
 	{
-		$action = new Class extends Action implements IRequestInterface {
-			protected function errors(array $attributes): void {}
-			public function authorize(): bool { return true; }
-			public function rules(): array { return ['username' => 'required']; }
-		};
-
-		$this->assertFalse($action->passes(), 'An Action that does not pass the validation rules, should cause the passes() method to be false.');
-	}
-
-	/** @test */
-	public function it_creates_redirect_if_error_added_via_validation_rules()
-	{
-		$action = new Class extends Action implements IRequestInterface {
-			protected function errors(array $attributes): void {}
-			public function authorize(): bool { return true; }
-			public function rules(): array { return ['username' => 'required']; }
-		};
-
-		$this->assertInstanceOf(RedirectResponse::class, $action->failedValidation());
+		$this->assertThrows(\Illuminate\Validation\ValidationException::class, function() {
+			$action = new Class extends Action {
+				use HandleRequest;
+				protected function authorize(): bool { return true; }
+				protected function rules(): array { return ['username' => 'required']; }
+			};
+		});
 	}
 
 	/** @test */
 	public function it_can_alter_validation_data()
 	{
-		$action = new Class extends Action implements IRequestInterface {
-			protected function errors(array $attributes): void {}
-			public function authorize(): bool { return true; }
-			public function rules(): array { return ['username' => 'required']; }
+		$action = new Class extends Action {
+			use HandleRequest;
+			protected function authorize(): bool { return true; }
+			protected function rules(): array { return ['username' => 'required']; }
+			protected function prepareForValidation(): array {
+				return ['username' => 'test'];
+			}
 		};
 
-		$this->assertFalse($action->passes());
-		$action->alterData(['username' => 'test']);
-		$this->assertTrue($action->passes());
+		$this->assertTrue($action->passes(), 'Altering the validation data should let the validator pass.');
 	}
 
 	/** @test */
 	public function it_can_handle_create_action()
 	{
 		$action = new Class extends Action implements ICreateInterface {
-			protected function errors(array $attributes): void {}
 			public function create(array $attributes) { return 'create'; }
 		};
 
@@ -131,7 +128,6 @@ class ActionTest extends TestCase
 	public function it_can_handle_edit_action()
 	{
 		$action = new Class extends Action implements IEditInterface {
-			protected function errors(array $attributes): void {}
 			public function edit(array $attributes) { return 'edit'; }
 		};
 
@@ -144,12 +140,23 @@ class ActionTest extends TestCase
 	public function it_can_handle_delete_action()
 	{
 		$action = new Class extends Action implements IDeleteInterface {
-			protected function errors(array $attributes): void {}
 			public function delete(array $attributes) { return 'delete'; }
 		};
 
 		$state = $action->handle();
 
         $this->assertEquals('delete', $state);
+	}
+
+	/** @test */
+	public function it_can_handle_save_action()
+	{
+		$action = new Class extends Action implements ISaveInterface {
+			public function save(array $attributes) { return 'save'; }
+		};
+
+		$state = $action->handle();
+
+        $this->assertEquals('save', $state);
 	}
 }
