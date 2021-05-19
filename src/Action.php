@@ -43,8 +43,6 @@ abstract class Action
 		if($this->fails()) {
 			$this->failedValidation();
 		}
-
-		$this->handle();
 	}
 
 	/**
