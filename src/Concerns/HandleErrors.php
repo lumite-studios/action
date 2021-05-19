@@ -20,7 +20,7 @@ trait HandleErrors
 	 */
 	protected function resolveErrors(): void
 	{
-		$this->errors($this->getAttributes());
+		$this->errors($this->getData());
 	}
 
 	/**
