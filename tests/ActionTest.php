@@ -113,6 +113,14 @@ class ActionTest extends TestCase
 	}
 
 	/** @test */
+	public function it_can_pass_data_to_class()
+	{
+		$instance = new Class extends Action {};
+		$action = new $instance(['test' => 'test']);
+		dd($action->data);
+	}
+
+	/** @test */
 	public function it_can_handle_create_action()
 	{
 		$action = new Class extends Action implements ICreateInterface {

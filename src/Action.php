@@ -65,6 +65,7 @@ abstract class Action
 
 	protected function getData(): array
 	{
+		dd($this->data);
 		return array_merge(request()->all(), $this->data, (request()->route()->parameters ?? []));
 	}
 
