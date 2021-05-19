@@ -16,7 +16,7 @@ abstract class Action
 	 * An array of attributes to use.
 	 * @var array
 	 */
-	protected array $attributes;
+	protected array $data;
 
 	/**
 	 * Create a new action instance.
@@ -24,9 +24,9 @@ abstract class Action
 	 * @param array $attributes 	An array of attributes to use.
 	 * @return void
 	 */
-	public function __construct(array $attributes = [])
+	public function __construct(array $data = [])
 	{
-		$this->attributes = $attributes;
+		$this->data = $data;
 
 		$this->createValidator();
 
@@ -65,7 +65,7 @@ abstract class Action
 
 	protected function getAttributes(): array
 	{
-		return array_merge(request()->all(), $this->attributes, (request()->route()->parameters ?? []));
+		return array_merge(request()->all(), $this->data, (request()->route()->parameters ?? []));
 	}
 
 	protected function getValidated(): array
