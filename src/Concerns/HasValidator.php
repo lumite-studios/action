@@ -19,9 +19,9 @@ trait HasValidator
 	 *
 	 * @return void
 	 */
-	protected function createValidator(): void
+	public function createValidator(): void
 	{
-		$data = $this->hasMethod('prepareForValidation') ? array_merge($this->getAllRequestData(), $this->prepareForValidation()) : $this->getAllRequestData();
+		$data = $this->hasMethod('prepareForValidation') ? array_merge($this->getAttributes(), $this->prepareForValidation()) : $this->getAttributes();
 		$rules = $this->hasMethod('rules') ? $this->rules() : [];
 		$messages = $this->hasMethod('messages') ? $this->messages() : [];
 		$attributes = $this->hasMethod('attributes') ? $this->attributes() : [];

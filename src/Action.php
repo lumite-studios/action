@@ -13,12 +13,21 @@ abstract class Action
 	use HasValidator;
 
 	/**
+	 * An array of attributes to use.
+	 * @var array
+	 */
+	protected array $attributes;
+
+	/**
 	 * Create a new action instance.
 	 *
+	 * @param array $attributes 	An array of attributes to use.
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(array $attributes = [])
 	{
+		$this->attributes = $attributes;
+
 		$this->createValidator();
 
 		// if the action is using the HandleRequest trait
@@ -46,27 +55,27 @@ abstract class Action
 	public function handle()
 	{
 		if($this instanceof ICreateInterface) {
-			return $this->create($this->getAttributes());
+			return $this->create($this->getValidated());
 		} elseif($this instanceof IDeleteInterface) {
-			return $this->delete($this->getAttributes());
+			return $this->delete($this->getValidated());
 		} elseif($this instanceof IEditInterface) {
-			return $this->edit($this->getAttributes());
+			return $this->edit($this->getValidated());
 		} elseif($this instanceof ISaveInterface) {
-			return $this->save($this->getAttributes());
+			return $this->save($this->getValidated());
 		}
-	}
-
-	protected function getAllRequestData(): array
-	{
-		return array_merge(request()->all(), (request()->route()->parameters ?? []));
 	}
 
 	protected function getAttributes(): array
 	{
+		return array_merge(request()->all(), $this->attributes, (request()->route()->parameters ?? []));
+	}
+
+	protected function getValidated(): array
+	{
 		if($this->hasMethod('validated')) {
 			return $this->validated();
 		}
-		return $this->getAllRequestData();
+		return $this->getAttributes();
 	}
 
 	protected function hasMethod(string $method): bool
