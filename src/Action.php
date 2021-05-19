@@ -29,7 +29,15 @@ abstract class Action
 		$this->data = $data;
 
 		$this->createValidator();
+	}
 
+	/**
+	 * Handle the action.
+	 *
+	 * @return mixed
+	 */
+	public function handle()
+	{
 		// if the action is using the HandleRequest trait
 		if($this->hasMethod('authorize')) {
 			$this->resolveRequest();
@@ -43,15 +51,7 @@ abstract class Action
 		if($this->fails()) {
 			$this->failedValidation();
 		}
-	}
 
-	/**
-	 * Handle the action.
-	 *
-	 * @return mixed
-	 */
-	public function handle()
-	{
 		if($this instanceof ICreateInterface) {
 			return $this->create($this->getValidated());
 		} elseif($this instanceof IDeleteInterface) {
@@ -65,7 +65,6 @@ abstract class Action
 
 	protected function getData(): array
 	{
-		dd($this->data);
 		return array_merge(request()->all(), $this->data, (request()->route()->parameters ?? []));
 	}
 

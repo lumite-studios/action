@@ -58,6 +58,7 @@ class ActionTest extends TestCase
 					$this->addError('test', 'test');
 				}
 			};
+			$action->handle();
 		});
 	}
 
@@ -70,6 +71,7 @@ class ActionTest extends TestCase
 				protected function authorize(): bool { return false; }
 				protected function rules(): array { return []; }
 			};
+			$action->handle();
 		});
 	}
 
@@ -81,6 +83,7 @@ class ActionTest extends TestCase
 			protected function authorize(): bool { return true; }
 			protected function rules(): array { return []; }
 		};
+		$action->handle();
 
 		$this->assertTrue($action->passesAuthorization(), 'An Action must be able to pass authorization.');
 	}
@@ -94,6 +97,7 @@ class ActionTest extends TestCase
 				protected function authorize(): bool { return true; }
 				protected function rules(): array { return ['username' => 'required']; }
 			};
+			$action->handle();
 		});
 	}
 
@@ -108,16 +112,16 @@ class ActionTest extends TestCase
 				return ['username' => 'test'];
 			}
 		};
+		$action->handle();
 
 		$this->assertTrue($action->passes(), 'Altering the validation data should let the validator pass.');
 	}
 
-	/** @test */
 	public function it_can_pass_data_to_class()
 	{
 		$instance = new Class extends Action {};
 		$action = new $instance(['test' => 'test']);
-		dd($action->data);
+		dd($action);
 	}
 
 	/** @test */
@@ -126,7 +130,6 @@ class ActionTest extends TestCase
 		$action = new Class extends Action implements ICreateInterface {
 			public function create(array $attributes) { return 'create'; }
 		};
-
 		$state = $action->handle();
 
         $this->assertEquals('create', $state);
@@ -138,7 +141,6 @@ class ActionTest extends TestCase
 		$action = new Class extends Action implements IEditInterface {
 			public function edit(array $attributes) { return 'edit'; }
 		};
-
 		$state = $action->handle();
 
         $this->assertEquals('edit', $state);
@@ -150,7 +152,6 @@ class ActionTest extends TestCase
 		$action = new Class extends Action implements IDeleteInterface {
 			public function delete(array $attributes) { return 'delete'; }
 		};
-
 		$state = $action->handle();
 
         $this->assertEquals('delete', $state);
@@ -162,7 +163,6 @@ class ActionTest extends TestCase
 		$action = new Class extends Action implements ISaveInterface {
 			public function save(array $attributes) { return 'save'; }
 		};
-
 		$state = $action->handle();
 
         $this->assertEquals('save', $state);
