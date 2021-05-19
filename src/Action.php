@@ -16,12 +16,12 @@ abstract class Action
 	 * An array of attributes to use.
 	 * @var array
 	 */
-	protected array $data;
+	public array $data;
 
 	/**
 	 * Create a new action instance.
 	 *
-	 * @param array $attributes 	An array of attributes to use.
+	 * @param array $data 	An array of data to use.
 	 * @return void
 	 */
 	public function __construct(array $data = [])
@@ -63,7 +63,7 @@ abstract class Action
 		}
 	}
 
-	protected function getAttributes(): array
+	protected function getData(): array
 	{
 		return array_merge(request()->all(), $this->data, (request()->route()->parameters ?? []));
 	}
@@ -73,7 +73,7 @@ abstract class Action
 		if($this->hasMethod('validated')) {
 			return $this->validated();
 		}
-		return $this->getAttributes();
+		return $this->getData();
 	}
 
 	protected function hasMethod(string $method): bool
