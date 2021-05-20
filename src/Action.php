@@ -29,6 +29,11 @@ abstract class Action
 		$this->data = $data;
 
 		$this->createValidator();
+
+		// if the action is using the HandleErrors trait
+		if($this->hasMethod('errors')) {
+			$this->resolveErrors();
+		}
 	}
 
 	/**
@@ -41,11 +46,6 @@ abstract class Action
 		// if the action is using the HandleRequest trait
 		if($this->hasMethod('authorize')) {
 			$this->resolveRequest();
-		}
-
-		// if the action is using the HandleErrors trait
-		if($this->hasMethod('errors')) {
-			$this->resolveErrors();
 		}
 
 		if($this->fails()) {
