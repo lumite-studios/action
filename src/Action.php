@@ -49,7 +49,7 @@ abstract class Action
 		}
 
 		if($this->fails()) {
-			$this->failedValidation();
+			return $this->failedValidation();
 		}
 
 		if($this instanceof ICreateInterface) {
