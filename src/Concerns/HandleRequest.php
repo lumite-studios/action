@@ -15,7 +15,7 @@ trait HandleRequest
 	/**
 	 * Get the validation rules that apply to the request.
 	 *
-	 * @return array
+	 * @return array<string|array<mixed>>
 	 */
 	abstract protected function rules(): array;
 

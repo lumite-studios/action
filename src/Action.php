@@ -28,11 +28,14 @@ abstract class Action
 	{
 		$this->data = $data;
 
-		$this->createValidator();
-
-		// if the action is using the HandleRequest trait
 		if($this->hasMethod('authorize')) {
 			$this->resolveRequest();
+		}
+
+		$this->createValidator();
+
+		if($this->fails()) {
+			$this->failedValidation();
 		}
 	}
 
@@ -43,13 +46,12 @@ abstract class Action
 	 */
 	public function handle()
 	{
-		// if the action is using the HandleErrors trait
 		if($this->hasMethod('errors')) {
 			$this->resolveErrors();
 		}
 
 		if($this->fails()) {
-			return $this->failedValidation();
+			$this->failedValidation();
 		}
 
 		if($this instanceof ICreateInterface) {

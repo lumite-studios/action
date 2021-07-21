@@ -47,11 +47,15 @@ public function UserController extends Controller
 #### Create
 ```php
 use LumiteStudios\Action\Action;
+use LumiteStudios\Action\Concerns\HandleErrors;
+use LumiteStudios\Action\Concerns\HandleRequest;
 use LumiteStudios\Action\Interfaces\ICreateInterface;
-use LumiteStudios\Action\Interfaces\IRequestInterface;
 
-class CreateUserAction extends Action implements ICreateInterface, IRequestInterface
+class CreateUserAction extends Action implements ICreateInterface
 {
+	use HandleErrors;
+	use HandleRequest;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -106,11 +110,15 @@ class CreateUserAction extends Action implements ICreateInterface, IRequestInter
 #### Edit
 ```php
 use LumiteStudios\Action\Action;
+use LumiteStudios\Action\Concerns\HandleErrors;
+use LumiteStudios\Action\Concerns\HandleRequest;
 use LumiteStudios\Action\Interfaces\IEditInterface;
-use LumiteStudios\Action\Interfaces\IRequestInterface;
 
-class EditUserAction extends Action implements IEditInterface, IRequestInterface
+class EditUserAction extends Action implements IEditInterface
 {
+	use HandleErrors;
+	use HandleRequest;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -178,11 +186,15 @@ class EditUserAction extends Action implements IEditInterface, IRequestInterface
 #### Delete
 ```php
 use LumiteStudios\Action\Action;
+use LumiteStudios\Action\Concerns\HandleErrors;
+use LumiteStudios\Action\Concerns\HandleRequest;
 use LumiteStudios\Action\Interfaces\IDeleteInterface;
-use LumiteStudios\Action\Interfaces\IRequestInterface;
 
-class DeleteUserAction extends Action implements IDeleteInterface, IRequestInterface
+class DeleteUserAction extends Action implements IDeleteInterface
 {
+	use HandleErrors;
+	use HandleRequest;
+
     /**
      * Determine if the user is authorized to make this request.
      *

@@ -6,7 +6,7 @@ interface IEditInterface
 	/**
 	 * Edit a resource.
 	 *
-	 * @param array $attributes 	An array of attributes.
+	 * @param array<mixed> $attributes 	An array of attributes.
 	 * @return mixed
 	 */
 	public function edit(array $attributes);

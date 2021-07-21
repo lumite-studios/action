@@ -6,7 +6,7 @@ interface ICreateInterface
 	/**
 	 * Create a new resource.
 	 *
-	 * @param array $attributes 	An array of attributes.
+	 * @param array<mixed> $attributes 	An array of attributes.
 	 * @return mixed
 	 */
 	public function create(array $attributes);
