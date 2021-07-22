@@ -65,11 +65,21 @@ abstract class Action
 		}
 	}
 
+	/**
+	 * Get the request data.
+	 *
+	 * @return array<mixed>
+	 */
 	protected function getData(): array
 	{
-		return array_merge(request()->all(), $this->data, (request()->route()->parameters ?? []));
+		return array_merge(request()->except(['_token', '_method']), $this->data, (request()->route()->parameters ?? []));
 	}
 
+	/**
+	 * Get the validated data.
+	 *
+	 * @return array<mixed>
+	 */
 	protected function getValidated(): array
 	{
 		if($this->hasMethod('validated')) {
@@ -78,6 +88,12 @@ abstract class Action
 		return $this->getData();
 	}
 
+	/**
+	 * Check if a method exists.
+	 *
+	 * @param string $method
+	 * @return bool
+	 */
 	protected function hasMethod(string $method): bool
 	{
 		return method_exists($this, $method);
