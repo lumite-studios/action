@@ -19,6 +19,15 @@ abstract class Action
 	public array $data;
 
 	/**
+	 * An array of parameters to ignore.
+	 * @var array<string>
+	 */
+	protected array $ignore = [
+		'_token',
+		'_method',
+	];
+
+	/**
 	 * Create a new action instance.
 	 *
 	 * @param array $data 	An array of data to use.
@@ -72,7 +81,7 @@ abstract class Action
 	 */
 	protected function getData(): array
 	{
-		return array_merge(request()->except(['_token', '_method']), $this->data, (request()->route()->parameters ?? []));
+		return array_merge(request()->except($this->ignore), $this->data, (request()->route()->parameters ?? []));
 	}
 
 	/**
