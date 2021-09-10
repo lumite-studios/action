@@ -16,7 +16,7 @@ composer test
 ```
 
 ### Usage
-The `\LumiteStudios\Action\Action` class can be used to simplify creating, editing, and deleting various resources.
+The `\LumiteStudios\Action\AbstractAction` class can be used to simplify creating, editing, and deleting various resources.
 
 #### Controller
 ```php
@@ -24,21 +24,21 @@ public function UserController extends Controller
 {
     public function store(CreateUserAction $action)
     {
-        $state = $action->handle();
+        $state = $action->handle()->run(); // OR $action->handle()->create($action->getValidated());
         $user = User::where('id', '=', $state)->first();
         return response()->json('User created.', 201);
     }
 
     public function update(int $user_id, EditUserAction $action)
     {
-        $state = $action->handle();
+        $state = $action->handle()->run(); // OR $action->handle()->edit($action->getValidated());
         $user = User::where('id', '=', $state)->first();
         return response()->json('User edited.', 200);
     }
 
     public function destroy(int $user_id, DeleteUserAction $action)
     {
-        $action->handle();
+        $action->handle()->run(); // OR $action->handle()->delete($action->getValidated());
         return response()->json('User deleted.', 204);
     }
 }
@@ -46,15 +46,15 @@ public function UserController extends Controller
 
 #### Create
 ```php
-use LumiteStudios\Action\Action;
-use LumiteStudios\Action\Concerns\HandleErrors;
-use LumiteStudios\Action\Concerns\HandleRequest;
-use LumiteStudios\Action\Interfaces\ICreateInterface;
+use LumiteStudios\Action\AbstractAction;
+use LumiteStudios\Action\Concerns\HandleErrorsTrait;
+use LumiteStudios\Action\Interfaces\CreateInterface;
+use LumiteStudios\Action\Concerns\HandleRequestTrait;
 
-class CreateUserAction extends Action implements ICreateInterface
+class CreateUserAction extends AbstractAction implements CreateInterface
 {
-	use HandleErrors;
-	use HandleRequest;
+	use HandleErrorsTrait;
+	use HandleRequestTrait;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -106,18 +106,17 @@ class CreateUserAction extends Action implements ICreateInterface
 }
 ```
 
-
 #### Edit
 ```php
-use LumiteStudios\Action\Action;
-use LumiteStudios\Action\Concerns\HandleErrors;
-use LumiteStudios\Action\Concerns\HandleRequest;
-use LumiteStudios\Action\Interfaces\IEditInterface;
+use LumiteStudios\Action\AbstractAction;
+use LumiteStudios\Action\Interfaces\EditInterface;
+use LumiteStudios\Action\Concerns\HandleErrorsTrait;
+use LumiteStudios\Action\Concerns\HandleRequestTrait;
 
-class EditUserAction extends Action implements IEditInterface
+class EditUserAction extends AbstractAction implements EditInterface
 {
-	use HandleErrors;
-	use HandleRequest;
+	use HandleErrorsTrait;
+	use HandleRequestTrait;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -182,18 +181,17 @@ class EditUserAction extends Action implements IEditInterface
 }
 ```
 
-
 #### Delete
 ```php
-use LumiteStudios\Action\Action;
-use LumiteStudios\Action\Concerns\HandleErrors;
-use LumiteStudios\Action\Concerns\HandleRequest;
-use LumiteStudios\Action\Interfaces\IDeleteInterface;
+use LumiteStudios\Action\AbstractAction;
+use LumiteStudios\Action\Concerns\HandleErrorsTrait;
+use LumiteStudios\Action\Interfaces\DeleteInterface;
+use LumiteStudios\Action\Concerns\HandleRequestTrait;
 
-class DeleteUserAction extends Action implements IDeleteInterface
+class DeleteUserAction extends AbstractAction implements DeleteInterface
 {
-	use HandleErrors;
-	use HandleRequest;
+	use HandleErrorsTrait;
+	use HandleRequestTrait;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -242,6 +240,64 @@ class DeleteUserAction extends Action implements IDeleteInterface
     private function fetchUser(int $user_id): User
     {
         return User::where('id', '=', $user_id)->first();
+    }
+
+    /**
+     * Get any associated errors.
+     *
+     * @param array $attributes 	An array of attributes.
+     * @return void
+     */
+    protected function errors(array $attributes): void
+    {
+        //
+    }
+}
+```
+
+#### Save
+```php
+use LumiteStudios\Action\AbstractAction;
+use LumiteStudios\Action\Concerns\HandleErrorsTrait;
+use LumiteStudios\Action\Interfaces\SaveInterface;
+use LumiteStudios\Action\Concerns\HandleRequestTrait;
+
+class SaveUsersAction extends AbstractAction implements SaveInterface
+{
+	use HandleErrorsTrait;
+	use HandleRequestTrait;
+
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        return auth()->check();
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    /**
+	 * Save changes to a resource.
+	 *
+	 * @param array<mixed> $attributes 	An array of attributes.
+	 * @return mixed
+	 */
+	public function save(array $attributes)
+    {
+        return true;
     }
 
     /**
