@@ -1,13 +1,13 @@
 <?php
 namespace LumiteStudios\Action\Interfaces;
 
-interface IDeleteInterface
+interface CreateInterface
 {
 	/**
-	 * Delete a resource.
+	 * Create a new resource.
 	 *
 	 * @param array<mixed> $attributes 	An array of attributes.
 	 * @return mixed
 	 */
-	public function delete(array $attributes);
+	public function create(array $attributes);
 }

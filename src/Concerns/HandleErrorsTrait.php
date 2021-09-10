@@ -3,7 +3,7 @@ namespace LumiteStudios\Action\Concerns;
 
 use LumiteStudios\Action\Concerns\HasValidator;
 
-trait HandleErrors
+trait HandleErrorsTrait
 {
 	/**
 	 * Get any associated errors.

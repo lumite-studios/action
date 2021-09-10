@@ -1,20 +1,19 @@
 <?php
 namespace LumiteStudios\Action;
 
-use LumiteStudios\Action\Concerns\HasValidator;
-use LumiteStudios\Action\Interfaces\IEditInterface;
-use LumiteStudios\Action\Interfaces\ISaveInterface;
-use LumiteStudios\Action\Interfaces\ICreateInterface;
-use LumiteStudios\Action\Interfaces\IDeleteInterface;
-use LumiteStudios\Action\Interfaces\IRequestInterface;
+use LumiteStudios\Action\Interfaces\EditInterface;
+use LumiteStudios\Action\Interfaces\SaveInterface;
+use LumiteStudios\Action\Concerns\HasValidatorTrait;
+use LumiteStudios\Action\Interfaces\CreateInterface;
+use LumiteStudios\Action\Interfaces\DeleteInterface;
 
-abstract class Action
+abstract class AbstractAction
 {
-	use HasValidator;
+	use HasValidatorTrait;
 
 	/**
 	 * An array of attributes to use.
-	 * @var array
+	 * @var array<mixed>
 	 */
 	public array $data;
 
@@ -30,7 +29,7 @@ abstract class Action
 	/**
 	 * Create a new action instance.
 	 *
-	 * @param array $data 	An array of data to use.
+	 * @param array<mixed> $data 	An array of data to use.
 	 * @return void
 	 */
 	public function __construct(array $data = [])
@@ -51,9 +50,9 @@ abstract class Action
 	/**
 	 * Handle the action.
 	 *
-	 * @return mixed
+	 * @return \LumiteStudios\Action\AbstractAction
 	 */
-	public function handle()
+	public function handle(): AbstractAction
 	{
 		if($this->hasMethod('errors')) {
 			$this->resolveErrors();
@@ -63,13 +62,23 @@ abstract class Action
 			$this->failedValidation();
 		}
 
-		if($this instanceof ICreateInterface) {
+		return $this;
+	}
+
+	/**
+	 * Run the action.
+	 *
+	 * @return mixed
+	 */
+	public function run(): mixed
+	{
+		if($this instanceof CreateInterface) {
 			return $this->create($this->getValidated());
-		} elseif($this instanceof IDeleteInterface) {
+		} elseif($this instanceof DeleteInterface) {
 			return $this->delete($this->getValidated());
-		} elseif($this instanceof IEditInterface) {
+		} elseif($this instanceof EditInterface) {
 			return $this->edit($this->getValidated());
-		} elseif($this instanceof ISaveInterface) {
+		} elseif($this instanceof SaveInterface) {
 			return $this->save($this->getValidated());
 		}
 	}

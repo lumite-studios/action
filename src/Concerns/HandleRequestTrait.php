@@ -3,7 +3,7 @@ namespace LumiteStudios\Action\Concerns;
 
 use Illuminate\Auth\Access\AuthorizationException;
 
-trait HandleRequest
+trait HandleRequestTrait
 {
 	/**
 	 * Whether the request is authorized.

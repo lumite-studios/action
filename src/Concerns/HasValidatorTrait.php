@@ -6,7 +6,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
 use Illuminate\Support\MessageBag;
 
-trait HasValidator
+trait HasValidatorTrait
 {
 	/**
 	 * An instance of the validator.
