@@ -10,8 +10,7 @@
     },
     "require-dev": {
         "orchestra/testbench": "^6.17",
-        "brianium/paratest": "^6.3",
-        "jchook/phpunit-assert-throws": "^1.0"
+        "pestphp/pest": "^1.18"
     },
     "autoload": {
         "psr-4": {
@@ -24,17 +23,13 @@
         }
     },
     "scripts": {
-        "test": [
-            "@putenv XDEBUG_MODE=develop",
-            "paratest -p8"
-        ],
-        "test-filter": [
-            "@putenv XDEBUG_MODE=develop",
-            "phpunit --filter"
-        ],
-        "test-coverage": [
-            "@putenv XDEBUG_MODE=coverage",
-            "paratest -p8 --coverage-clover=coverage.xml"
-        ]
+		"test": [
+			"@putenv XDEBUG_MODE=develop",
+			"pest"
+		],
+		"test-coverage": [
+			"@putenv XDEBUG_MODE=coverage",
+			"pest --coverage"
+		]
     }
 }

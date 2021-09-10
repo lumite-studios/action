@@ -1,170 +1,131 @@
 <?php
-namespace LumiteStudios\Action\Tests;
 
-use LumiteStudios\Action\Action;
-use Illuminate\Validation\Validator;
-use LumiteStudios\Action\Concerns\HandleErrors;
-use LumiteStudios\Action\Concerns\HandleRequest;
-use LumiteStudios\Action\Interfaces\IEditInterface;
-use LumiteStudios\Action\Interfaces\ISaveInterface;
-use LumiteStudios\Action\Interfaces\ICreateInterface;
-use LumiteStudios\Action\Interfaces\IDeleteInterface;
+use LumiteStudios\Action\AbstractAction;
+use LumiteStudios\Action\Interfaces\EditInterface;
+use LumiteStudios\Action\Interfaces\SaveInterface;
+use LumiteStudios\Action\Concerns\HandleErrorsTrait;
+use LumiteStudios\Action\Interfaces\CreateInterface;
+use LumiteStudios\Action\Interfaces\DeleteInterface;
+use LumiteStudios\Action\Concerns\HandleRequestTrait;
 
-class ActionTest extends TestCase
-{
-	/** @test */
-	public function it_does_create_validator_in_constructor()
-	{
-		$action = new Class extends Action {};
+test('creates validator in constructor', function () {
+	$action = new Class extends AbstractAction {};
 
-		$this->assertInstanceOf(Validator::class, $action->getValidator(), 'Action must instantiate a validator in the constructor.');
-	}
+	expect($action->getValidator())->toBeInstanceOf(\Illuminate\Validation\Validator::class);
+});
 
-	/** @test */
-	public function it_passes_without_errors()
-	{
-		$action = new Class extends Action {};
+test('passes without errors', function () {
+	$action = new Class extends AbstractAction {};
 
-		$this->assertTrue(method_exists($action, 'fails'), 'An Action must have a "fails" method.');
-		$this->assertTrue(method_exists($action, 'passes'), 'An Action must have a "passes" method.');
-		$this->assertFalse($action->fails());
-		$this->assertTrue($action->passes());
-	}
+	expect(method_exists($action, 'fails'))->toBeTrue();
+	expect(method_exists($action, 'passes'))->toBeTrue();
+	expect($action->fails())->toBeFalse();
+	expect($action->passes())->toBeTrue();
+});
 
-	/** @test */
-	public function it_can_add_error_with_handle_errors_trait()
-	{
-		$action = new Class extends Action {
-			use HandleErrors;
-			protected function errors(array $attributes): void {}
-		};
-		$key = 'error_key';
-		$value = 'error_value';
+test('can handle additional errors with trait', function () {
+	$action = new Class extends AbstractAction {
+		use HandleErrorsTrait;
+		protected function errors(array $attributes): void {}
+	};
+	$key = 'error_key';
+	$value = 'error_value';
 
-		$action->addError($key, $value);
+	$action->addError($key, $value);
 
-		$this->assertCount(1, $action->getErrors(), 'The Action errors should contain an added error.');
-		$this->assertTrue($action->getErrors()->has($key), 'The Action errors should contain the added error key.');
-		$this->assertEquals($value, $action->getErrors()->get($key)[0], 'The Action errors should contain the added error value.');
-	}
+	expect($action->getErrors())->toHaveCount(1);
+	expect($action->getErrors()->has($key))->toBeTrue();
+	expect($action->getErrors()->get($key)[0])->toBe($value);
+});
 
-	/** @test */
-	public function it_throws_validation_exception_if_error_added()
-	{
-		$this->assertThrows(\Illuminate\Validation\ValidationException::class, function() {
-			$action = new Class extends Action {
-				use HandleErrors;
-				protected function errors(array $attributes): void {
-					$this->addError('test', 'test');
-				}
-			};
-			$action->handle();
-		});
-	}
+test('throws validation exception on error', function() {
+	$action = new Class extends AbstractAction {
+		use HandleErrorsTrait;
+		protected function errors(array $attributes): void {}
+	};
+	$action->addError('error_key', 'error_value');
+	$action->handle();
+})->throws(\Illuminate\Validation\ValidationException::class);
 
-	/** @test */
-	public function it_throws_authorization_exception_if_authorize_fails()
-	{
-		$this->assertThrows(\Illuminate\Auth\Access\AuthorizationException::class, function() {
-			$action = new Class extends Action {
-				use HandleRequest;
-				protected function authorize(): bool { return false; }
-				protected function rules(): array { return []; }
-			};
-			$action->handle();
-		});
-	}
+test('throws authorization exception if authorize fails', function() {
+	$action = new Class extends AbstractAction {
+		use HandleRequestTrait;
+		protected function authorize(): bool { return false; }
+		protected function rules(): array { return []; }
+	};
+	$action->handle();
+})->throws(\Illuminate\Auth\Access\AuthorizationException::class);
 
-	/** @test */
-	public function it_can_pass_authorization()
-	{
-		$action = new Class extends Action {
-			use HandleRequest;
-			protected function authorize(): bool { return true; }
-			protected function rules(): array { return []; }
-		};
-		$action->handle();
+test('can pass authorization', function () {
+	$action = new Class extends AbstractAction {
+		use HandleRequestTrait;
+		protected function authorize(): bool { return true; }
+		protected function rules(): array { return []; }
+	};
+	$action->handle();
 
-		$this->assertTrue($action->passesAuthorization(), 'An Action must be able to pass authorization.');
-	}
+	expect($action->passesAuthorization())->toBeTrue();
+});
 
-	/** @test */
-	public function it_throws_validation_exception_if_rules_failed()
-	{
-		$this->assertThrows(\Illuminate\Validation\ValidationException::class, function() {
-			$action = new Class extends Action {
-				use HandleRequest;
-				protected function authorize(): bool { return true; }
-				protected function rules(): array { return ['username' => 'required']; }
-			};
-			$action->handle();
-		});
-	}
+test('throws validation exception if rules fail', function() {
+	$action = new Class extends AbstractAction {
+		use HandleRequestTrait;
+		protected function authorize(): bool { return true; }
+		protected function rules(): array { return ['username' => 'required']; }
+	};
+	$action->handle();
+})->throws(\Illuminate\Validation\ValidationException::class);
 
-	/** @test */
-	public function it_can_alter_validation_data()
-	{
-		$action = new Class extends Action {
-			use HandleRequest;
-			protected function authorize(): bool { return true; }
-			protected function rules(): array { return ['username' => 'required']; }
-			protected function prepareForValidation(): array {
-				return ['username' => 'test'];
-			}
-		};
-		$action->handle();
+test('can alter validation data', function() {
+	$action = new Class extends AbstractAction {
+		use HandleRequestTrait;
+		protected function authorize(): bool { return true; }
+		protected function rules(): array { return ['username' => 'required']; }
+		protected function prepareForValidation(): array {
+			return ['username' => 'test'];
+		}
+	};
+	$action->handle();
 
-		$this->assertTrue($action->passes(), 'Altering the validation data should let the validator pass.');
-	}
+	expect($action->passes())->toBeTrue();
+});
 
-	public function it_can_pass_data_to_class()
-	{
-		$instance = new Class extends Action {};
-		$action = new $instance(['test' => 'test']);
-		dd($action);
-	}
+test('can handle create with interface', function() {
+	$action = new Class extends AbstractAction implements CreateInterface {
+		public function create(array $attributes) { return 'create'; }
+	};
+	$state = $action->handle()->run();
 
-	/** @test */
-	public function it_can_handle_create_action()
-	{
-		$action = new Class extends Action implements ICreateInterface {
-			public function create(array $attributes) { return 'create'; }
-		};
-		$state = $action->handle();
+	expect($action->passes())->toBeTrue();
+	expect($state)->toBe('create');
+});
 
-        $this->assertEquals('create', $state);
-	}
+test('can handle edit with interface', function() {
+	$action = new Class extends AbstractAction implements EditInterface {
+		public function edit(array $attributes) { return 'edit'; }
+	};
+	$state = $action->handle()->run();
 
-	/** @test */
-	public function it_can_handle_edit_action()
-	{
-		$action = new Class extends Action implements IEditInterface {
-			public function edit(array $attributes) { return 'edit'; }
-		};
-		$state = $action->handle();
+	expect($action->passes())->toBeTrue();
+	expect($state)->toBe('edit');
+});
 
-        $this->assertEquals('edit', $state);
-	}
+test('can handle delete with interface', function() {
+	$action = new Class extends AbstractAction implements DeleteInterface {
+		public function delete(array $attributes) { return 'delete'; }
+	};
+	$state = $action->handle()->run();
 
-	/** @test */
-	public function it_can_handle_delete_action()
-	{
-		$action = new Class extends Action implements IDeleteInterface {
-			public function delete(array $attributes) { return 'delete'; }
-		};
-		$state = $action->handle();
+	expect($action->passes())->toBeTrue();
+	expect($state)->toBe('delete');
+});
 
-        $this->assertEquals('delete', $state);
-	}
+test('can handle save with interface', function() {
+	$action = new Class extends AbstractAction implements SaveInterface {
+		public function save(array $attributes) { return 'save'; }
+	};
+	$state = $action->handle()->run();
 
-	/** @test */
-	public function it_can_handle_save_action()
-	{
-		$action = new Class extends Action implements ISaveInterface {
-			public function save(array $attributes) { return 'save'; }
-		};
-		$state = $action->handle();
-
-        $this->assertEquals('save', $state);
-	}
-}
+	expect($action->passes())->toBeTrue();
+	expect($state)->toBe('save');
+});
