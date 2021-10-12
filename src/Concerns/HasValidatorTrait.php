@@ -1,18 +1,19 @@
 <?php
 namespace LumiteStudios\Action\Concerns;
 
+use Illuminate\Support\MessageBag;
 use Illuminate\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
-use Illuminate\Support\MessageBag;
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 
 trait HasValidatorTrait
 {
 	/**
 	 * An instance of the validator.
-	 * @var \Illuminate\Validation\Validator
+	 * @var \Illuminate\Contracts\Validation\Validator
 	 */
-	protected Validator $validator;
+	protected ValidatorContract $validator;
 
 	/**
 	 * Create a validator instance.
@@ -33,10 +34,11 @@ trait HasValidatorTrait
 	 * Handle a failed validation.
 	 *
 	 * @throws \Illuminate\Validation\ValidationException
+	 * @return void
 	 */
-	public function failedValidation()
+	public function failedValidation(): void
 	{
-		throw new ValidationException($this->validator);
+		throw new ValidationException($this->getValidator());
 	}
 
 	/**
@@ -62,9 +64,9 @@ trait HasValidatorTrait
 	/**
 	 * Get the validator instance.
 	 *
-	 * @return \Illuminate\Validation\Validator|null
+	 * @return \Illuminate\Contracts\Validation\Validator
 	 */
-	public function getValidator(): ?Validator
+	public function getValidator(): ValidatorContract
 	{
 		return $this->validator;
 	}
@@ -92,7 +94,7 @@ trait HasValidatorTrait
 	/**
 	 * Get the validated fields.
 	 *
-	 * @return array
+	 * @return array<mixed>
 	 */
 	public function validated(): array
 	{

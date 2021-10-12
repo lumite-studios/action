@@ -10,7 +10,8 @@
     },
     "require-dev": {
         "orchestra/testbench": "^6.17",
-        "pestphp/pest": "^1.18"
+        "pestphp/pest": "^1.18",
+        "nunomaduro/larastan": "^0.7.12"
     },
     "autoload": {
         "psr-4": {
@@ -30,6 +31,12 @@
 		"test-coverage": [
 			"@putenv XDEBUG_MODE=coverage",
 			"pest --coverage"
+		],
+		"stan": [
+			"phpstan analyse"
+		],
+		"stan-debug": [
+			"phpstan analyse --debug"
 		]
     }
 }

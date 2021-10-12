@@ -50,9 +50,9 @@ abstract class AbstractAction
 	/**
 	 * Handle the action.
 	 *
-	 * @return \LumiteStudios\Action\AbstractAction
+	 * @return self
 	 */
-	public function handle(): AbstractAction
+	public function handle(): self
 	{
 		if($this->hasMethod('errors')) {
 			$this->resolveErrors();
@@ -81,6 +81,7 @@ abstract class AbstractAction
 		} elseif($this instanceof SaveInterface) {
 			return $this->save($this->getValidated());
 		}
+		return null;
 	}
 
 	/**
@@ -90,7 +91,11 @@ abstract class AbstractAction
 	 */
 	protected function getData(): array
 	{
-		return array_merge(request()->except($this->ignore), $this->data, (request()->route()->parameters ?? []));
+		return array_merge(
+			request()->except($this->ignore),
+			$this->data,
+			(request()->route()->parameters ?? [])
+		);
 	}
 
 	/**
