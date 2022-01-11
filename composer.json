@@ -38,5 +38,10 @@
 		"stan-debug": [
 			"phpstan analyse --debug"
 		]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }
