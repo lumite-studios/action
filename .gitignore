@@ -1,3 +1,5 @@
 /vendor
-todo.txt
+composer-dev.json
+composer-dev.lock
 coverage.xml
+todo.txt
