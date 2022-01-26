@@ -74,8 +74,7 @@ test('throws validation exception if rules fail', function () {
 })->throws(\Illuminate\Validation\ValidationException::class);
 
 test('can alter validation data', function () {
-	$action = new RuleAction();
-	$action->handle(['username' => 'test']);
+	$action = new RuleAction(['username' => 'test']);
 
 	expect($action->passes())->toBeTrue();
 });

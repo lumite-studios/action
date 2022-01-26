@@ -30,15 +30,22 @@ abstract class AbstractAction
 	/**
 	 * Create a new action instance.
 	 *
+	 * @param array<mixed> $data 	An array of data to use.
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(array $data = [])
 	{
+		$this->data = $data;
+
 		if ($this->hasMethod('authorize')) {
 			$this->resolveRequest();
 		}
 
 		$this->createValidator();
+
+		if ($this->fails()) {
+			$this->failedValidation();
+		}
 	}
 
 	/**
@@ -47,10 +54,8 @@ abstract class AbstractAction
 	 * @param array<mixed> $data 	An array of data to use.
 	 * @return self
 	 */
-	public function handle(array $data = []): self
+	public function handle(): self
 	{
-		$this->validator->setData($data);
-
 		if ($this->hasMethod('errors')) {
 			$this->resolveErrors();
 		}
