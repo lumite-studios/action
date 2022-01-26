@@ -1,4 +1,5 @@
 <?php
+
 namespace LumiteStudios\Action;
 
 use LumiteStudios\Action\Interfaces\EditInterface;
@@ -15,7 +16,7 @@ abstract class AbstractAction
 	 * An array of attributes to use.
 	 * @var array<mixed>
 	 */
-	public array $data;
+	public array $data = [];
 
 	/**
 	 * An array of parameters to ignore.
@@ -29,36 +30,32 @@ abstract class AbstractAction
 	/**
 	 * Create a new action instance.
 	 *
-	 * @param array<mixed> $data 	An array of data to use.
 	 * @return void
 	 */
-	public function __construct(array $data = [])
+	public function __construct()
 	{
-		$this->data = $data;
-
-		if($this->hasMethod('authorize')) {
+		if ($this->hasMethod('authorize')) {
 			$this->resolveRequest();
 		}
 
 		$this->createValidator();
-
-		if($this->fails()) {
-			$this->failedValidation();
-		}
 	}
 
 	/**
 	 * Handle the action.
 	 *
+	 * @param array<mixed> $data 	An array of data to use.
 	 * @return self
 	 */
-	public function handle(): self
+	public function handle(array $data = []): self
 	{
-		if($this->hasMethod('errors')) {
+		$this->validator->setData($data);
+
+		if ($this->hasMethod('errors')) {
 			$this->resolveErrors();
 		}
 
-		if($this->fails()) {
+		if ($this->fails()) {
 			$this->failedValidation();
 		}
 
@@ -72,13 +69,13 @@ abstract class AbstractAction
 	 */
 	public function run(): mixed
 	{
-		if($this instanceof CreateInterface) {
+		if ($this instanceof CreateInterface) {
 			return $this->create($this->getValidated());
-		} elseif($this instanceof DeleteInterface) {
+		} elseif ($this instanceof DeleteInterface) {
 			return $this->delete($this->getValidated());
-		} elseif($this instanceof EditInterface) {
+		} elseif ($this instanceof EditInterface) {
 			return $this->edit($this->getValidated());
-		} elseif($this instanceof SaveInterface) {
+		} elseif ($this instanceof SaveInterface) {
 			return $this->save($this->getValidated());
 		}
 		return null;
@@ -105,7 +102,7 @@ abstract class AbstractAction
 	 */
 	protected function getValidated(): array
 	{
-		if($this->hasMethod('validated')) {
+		if ($this->hasMethod('validated')) {
 			return $this->validated();
 		}
 		return $this->getData();

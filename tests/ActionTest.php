@@ -1,131 +1,121 @@
 <?php
 
-use LumiteStudios\Action\AbstractAction;
-use LumiteStudios\Action\Interfaces\EditInterface;
-use LumiteStudios\Action\Interfaces\SaveInterface;
-use LumiteStudios\Action\Concerns\HandleErrorsTrait;
-use LumiteStudios\Action\Interfaces\CreateInterface;
-use LumiteStudios\Action\Interfaces\DeleteInterface;
-use LumiteStudios\Action\Concerns\HandleRequestTrait;
+use LumiteStudios\Action\Tests\Classes\AllAction;
+use LumiteStudios\Action\Tests\Classes\EditAction;
+use LumiteStudios\Action\Tests\Classes\RuleAction;
+use LumiteStudios\Action\Tests\Classes\SaveAction;
+use LumiteStudios\Action\Tests\Classes\TestAction;
+use LumiteStudios\Action\Tests\Classes\ErrorAction;
+use LumiteStudios\Action\Tests\Classes\CreateAction;
+use LumiteStudios\Action\Tests\Classes\DeleteAction;
+use LumiteStudios\Action\Tests\Classes\AuthorizeAction;
 
-test('creates validator in constructor', function () {
-	$action = new Class extends AbstractAction {};
+test('creates a validator in the constructor', function () {
+	$action = new TestAction();
 
-	expect($action->getValidator())->toBeInstanceOf(\Illuminate\Validation\Validator::class);
+	expect($action->getValidator())
+		->toBeInstanceOf(\Illuminate\Validation\Validator::class);
 });
 
-test('passes without errors', function () {
-	$action = new Class extends AbstractAction {};
+test('passes without errors when no data is supplied', function () {
+	$action = new TestAction();
 
-	expect(method_exists($action, 'fails'))->toBeTrue();
-	expect(method_exists($action, 'passes'))->toBeTrue();
-	expect($action->fails())->toBeFalse();
-	expect($action->passes())->toBeTrue();
+	expect(method_exists($action, 'fails'))
+		->toBeTrue()
+		->and(method_exists($action, 'passes'))
+		->toBeTrue()
+		->and($action->fails())
+		->toBeFalse()
+		->and($action->passes())
+		->toBeTrue();
 });
 
 test('can handle additional errors with trait', function () {
-	$action = new Class extends AbstractAction {
-		use HandleErrorsTrait;
-		protected function errors(array $attributes): void {}
-	};
+	$action = new ErrorAction();
 	$key = 'error_key';
 	$value = 'error_value';
 
 	$action->addError($key, $value);
 
-	expect($action->getErrors())->toHaveCount(1);
-	expect($action->getErrors()->has($key))->toBeTrue();
-	expect($action->getErrors()->get($key)[0])->toBe($value);
+	expect($action->fails())
+		->toBeTrue()
+		->and($action->passes())
+		->toBeFalse()
+		->and($action->getErrors())
+		->toHaveCount(1)
+		->and($action->getErrors()->has($key))
+		->toBeTrue()
+		->and($action->getErrors()->get($key)[0])
+		->toBe($value);
 });
 
-test('throws validation exception on error', function() {
-	$action = new Class extends AbstractAction {
-		use HandleErrorsTrait;
-		protected function errors(array $attributes): void {}
-	};
+test('throws validation exception on error', function () {
+	$action = new ErrorAction();
 	$action->addError('error_key', 'error_value');
 	$action->handle();
 })->throws(\Illuminate\Validation\ValidationException::class);
 
-test('throws authorization exception if authorize fails', function() {
-	$action = new Class extends AbstractAction {
-		use HandleRequestTrait;
-		protected function authorize(): bool { return false; }
-		protected function rules(): array { return []; }
-	};
+test('throws authorization exception if authorize fails', function () {
+	$action = new AuthorizeAction();
 	$action->handle();
 })->throws(\Illuminate\Auth\Access\AuthorizationException::class);
 
 test('can pass authorization', function () {
-	$action = new Class extends AbstractAction {
-		use HandleRequestTrait;
-		protected function authorize(): bool { return true; }
-		protected function rules(): array { return []; }
-	};
+	$action = new AllAction();
 	$action->handle();
 
-	expect($action->passesAuthorization())->toBeTrue();
+	expect($action->passesAuthorization())
+		->toBeTrue();
 });
 
-test('throws validation exception if rules fail', function() {
-	$action = new Class extends AbstractAction {
-		use HandleRequestTrait;
-		protected function authorize(): bool { return true; }
-		protected function rules(): array { return ['username' => 'required']; }
-	};
+test('throws validation exception if rules fail', function () {
+	$action = new RuleAction();
 	$action->handle();
 })->throws(\Illuminate\Validation\ValidationException::class);
 
-test('can alter validation data', function() {
-	$action = new Class extends AbstractAction {
-		use HandleRequestTrait;
-		protected function authorize(): bool { return true; }
-		protected function rules(): array { return ['username' => 'required']; }
-		protected function prepareForValidation(): array {
-			return ['username' => 'test'];
-		}
-	};
-	$action->handle();
+test('can alter validation data', function () {
+	$action = new RuleAction();
+	$action->handle(['username' => 'test']);
 
 	expect($action->passes())->toBeTrue();
 });
 
-test('can handle create with interface', function() {
-	$action = new Class extends AbstractAction implements CreateInterface {
-		public function create(array $attributes) { return 'create'; }
-	};
+test('can handle create with interface', function () {
+	$action = new CreateAction();
 	$state = $action->handle()->run();
 
-	expect($action->passes())->toBeTrue();
-	expect($state)->toBe('create');
+	expect($action->passes())
+		->toBeTrue()
+		->and($state)
+		->toBe('create');
 });
 
-test('can handle edit with interface', function() {
-	$action = new Class extends AbstractAction implements EditInterface {
-		public function edit(array $attributes) { return 'edit'; }
-	};
+test('can handle edit with interface', function () {
+	$action = new EditAction();
 	$state = $action->handle()->run();
 
-	expect($action->passes())->toBeTrue();
-	expect($state)->toBe('edit');
+	expect($action->passes())
+		->toBeTrue()
+		->and($state)
+		->toBe('edit');
 });
 
-test('can handle delete with interface', function() {
-	$action = new Class extends AbstractAction implements DeleteInterface {
-		public function delete(array $attributes) { return 'delete'; }
-	};
+test('can handle delete with interface', function () {
+	$action = new DeleteAction();
 	$state = $action->handle()->run();
 
-	expect($action->passes())->toBeTrue();
-	expect($state)->toBe('delete');
+	expect($action->passes())
+		->toBeTrue()
+		->and($state)
+		->toBe('delete');
 });
 
-test('can handle save with interface', function() {
-	$action = new Class extends AbstractAction implements SaveInterface {
-		public function save(array $attributes) { return 'save'; }
-	};
+test('can handle save with interface', function () {
+	$action = new SaveAction();
 	$state = $action->handle()->run();
 
-	expect($action->passes())->toBeTrue();
-	expect($state)->toBe('save');
+	expect($action->passes())
+		->toBeTrue()
+		->and($state)
+		->toBe('save');
 });
