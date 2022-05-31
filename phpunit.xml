@@ -20,8 +20,8 @@
 		</include>
 	</coverage>
 	<testsuites>
-		<testsuite name="Tests">
-			<directory suffix="Test.php">./tests</directory>
+		<testsuite name="Action Tests">
+			<directory suffix="Test.php">./tests/Action</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>

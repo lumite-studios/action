@@ -24,8 +24,28 @@ uses(\LumiteStudios\Action\Tests\TestCase::class)->in(__DIR__);
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
+expect()->extend('toBeInvalid', function (array $errors) {
+    try {
+        $this->value->__invoke();
+        test()->fail('No Validation Exception was thrown!');
+    } catch (\Illuminate\Validation\ValidationException $exception) {
+        foreach ($errors as $key => $value) {
+            if (is_int($key)) {
+                expect($exception->errors())
+                    ->toHaveKey($value);
+            } else {
+                expect($exception->errors())
+                    ->toHaveKey($key)
+                    ->and($exception->errors()[$key][0])
+                    ->toBe($value);
+            }
+            return $this;
+        }
+    }
+});
+
+expect()->extend('toThrowAuth', function () {
+    return $this->toThrow(\Illuminate\Auth\Access\AuthorizationException::class);
 });
 
 /*
