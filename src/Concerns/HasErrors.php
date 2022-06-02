@@ -24,7 +24,7 @@ trait HasErrors
 
         $this->errors($parameters);
 
-        if ($this->errorBag->count() > 0) {
+        if ($this->hasErrors()) {
             return $this->failedValidation($this->errorBag->getMessages());
         }
     }
@@ -39,5 +39,15 @@ trait HasErrors
     protected function addError(string $field, string $message): void
     {
         $this->errorBag->add($field, $message);
+    }
+
+    /**
+     * Check if there are any errors.
+     *
+     * @return bool
+     */
+    protected function hasErrors(): bool
+    {
+        return $this->errorBag->count() > 0;
     }
 }
