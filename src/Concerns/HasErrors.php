@@ -6,6 +6,11 @@ use Illuminate\Support\MessageBag;
 
 trait HasErrors
 {
+    /**
+     * Errors sub group.
+     * @var null|string
+     */
+    public $errorsGroup = null;
 
     /**
      * The bag to hold the errors.
@@ -25,6 +30,9 @@ trait HasErrors
         $this->errors($parameters);
 
         if ($this->hasErrors()) {
+            if ($this->errorsGroup !== null) {
+                return $this->failedValidation([$this->errorsGroup => $this->errorBag->getMessages()]);
+            }
             return $this->failedValidation($this->errorBag->getMessages());
         }
     }
