@@ -2,6 +2,7 @@
 
 namespace LumiteStudios\Action\Concerns;
 
+use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 
@@ -85,9 +86,6 @@ trait HasValidation
         );
 
         if ($validator->fails()) {
-            if ($this->errorsGroup !== null) {
-                return $this->failedValidation([$this->errorsGroup => $validator->errors()->getMessages()]);
-            }
             return $this->failedValidation($validator->errors()->getMessages());
         }
     }
@@ -102,6 +100,10 @@ trait HasValidation
      */
     protected function failedValidation(array $errors)
     {
+        if ($this->errorsGroup !== null) {
+            $errors = [$this->errorsGroup => Arr::collapse($errors)];
+        }
+
         throw ValidationException::withMessages($errors);
     }
 }

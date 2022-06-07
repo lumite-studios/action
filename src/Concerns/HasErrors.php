@@ -2,6 +2,7 @@
 
 namespace LumiteStudios\Action\Concerns;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\MessageBag;
 
 trait HasErrors
@@ -24,9 +25,6 @@ trait HasErrors
         $this->errors($parameters);
 
         if ($this->hasErrors()) {
-            if ($this->errorsGroup !== null) {
-                return $this->failedValidation([$this->errorsGroup => $this->errorBag->getMessages()]);
-            }
             return $this->failedValidation($this->errorBag->getMessages());
         }
     }
