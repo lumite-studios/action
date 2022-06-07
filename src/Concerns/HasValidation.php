@@ -8,6 +8,12 @@ use Illuminate\Auth\Access\AuthorizationException;
 trait HasValidation
 {
     /**
+     * Errors sub group.
+     * @var null|string
+     */
+    public string|null $errorsGroup = null;
+
+    /**
      * Check if the request should be validated.
      *
      * @return bool
@@ -79,6 +85,9 @@ trait HasValidation
         );
 
         if ($validator->fails()) {
+            if ($this->errorsGroup !== null) {
+                return $this->failedValidation([$this->errorsGroup => $validator->errors()->getMessages()]);
+            }
             return $this->failedValidation($validator->errors()->getMessages());
         }
     }

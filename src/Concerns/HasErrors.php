@@ -7,12 +7,6 @@ use Illuminate\Support\MessageBag;
 trait HasErrors
 {
     /**
-     * Errors sub group.
-     * @var null|string
-     */
-    public $errorsGroup = null;
-
-    /**
      * The bag to hold the errors.
      * @var \Illuminate\Support\MessageBag
      */
