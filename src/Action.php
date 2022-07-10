@@ -182,13 +182,13 @@ class Action
      * @param array $arguments
      * @return \Illuminate\Support\Collection
      */
-    private function resolveArgumentOrder(string $method, array $arguments): \Illuminate\Support\Collection
+    protected function resolveArgumentOrder(string $method, array $arguments): \Illuminate\Support\Collection
     {
-        return collect((new ReflectionMethod($this, $method))->getParameters())->transform(function ($param) use ($arguments) {
+        return collect((new ReflectionMethod($this, $method))->getParameters())->mapWithKeys(function ($param) use ($arguments) {
             $classname = $param->getType()->getName();
-            return collect($arguments)->filter(function ($arg) use ($classname) {
+            return [$param->getName() => collect($arguments)->filter(function ($arg) use ($classname) {
                 return $arg instanceof $classname;
-            })->first();
+            })->first()];
         });
     }
 }
