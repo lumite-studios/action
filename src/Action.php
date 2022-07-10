@@ -57,6 +57,7 @@ class Action
      */
     public function __invoke(...$parameters)
     {
+        $this->fill($this->resolveArgumentOrder('handle', $parameters)->toArray());
         return $this->handle(...$parameters);
     }
 
