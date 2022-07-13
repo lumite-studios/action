@@ -2,7 +2,7 @@
 
 namespace LumiteStudios\Action\Concerns;
 
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 
 trait HasAttributes
 {
@@ -19,7 +19,7 @@ trait HasAttributes
      * The attributes to use within the action.
      * @var array
      */
-    protected array $attributes = [];
+    protected Collection $attributes;
 
     /**
      * Add attributes.
@@ -27,9 +27,13 @@ trait HasAttributes
      * @param array $attributes
      * @return self
      */
-    public function fill(array $attributes): self
+    public function fill($attributes): self
     {
-        $this->attributes = array_merge($this->attributes, $attributes);
+        if (is_array($attributes)) {
+            $attributes = collect($attributes);
+        }
+
+        $this->attributes = $this->attributes->merge($attributes);
 
         return $this;
     }
@@ -41,11 +45,12 @@ trait HasAttributes
      */
     public function fillFromRequest(): self
     {
-        $this->attributes = Arr::except(array_merge(
-            $this->attributes,
+        $fromRoute = array_merge(
             $this->route ? $this->route->parametersWithoutNulls() : [],
             $this->request->all(),
-        ), $this->ignore);
+        );
+
+        $this->fill(collect($fromRoute)->except($this->ignore));
 
         return $this;
     }
@@ -57,7 +62,7 @@ trait HasAttributes
      */
     public function all(): array
     {
-        return $this->attributes;
+        return $this->attributes->all();
     }
 
     /**
@@ -68,7 +73,7 @@ trait HasAttributes
      */
     public function except(array $keys): array
     {
-        return Arr::except($this->attributes, $keys);
+        return $this->attributes->except($keys);
     }
 
     /**
@@ -80,7 +85,7 @@ trait HasAttributes
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        return Arr::get($this->attributes, $key, $default);
+        return $this->attributes->get($key, $default);
     }
 
     /**

@@ -1,4 +1,5 @@
 /vendor
+.phpunit.result.cache
 composer-dev.json
 composer-dev.lock
 coverage.xml

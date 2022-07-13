@@ -42,6 +42,7 @@ class Action
             throw ActionException::missingHandle();
         }
 
+        $this->attributes = collect();
         $this->request = request();
         $this->route = request()->route() ?? null;
 
@@ -57,7 +58,7 @@ class Action
      */
     public function __invoke(...$parameters)
     {
-        $this->fill($this->resolveArgumentOrder('handle', $parameters)->toArray());
+        $this->fill($this->resolveArgumentOrder('handle', $parameters));
         return $this->handle(...$parameters);
     }
 

@@ -18,7 +18,7 @@ trait HasErrors
      *
      * @return mixed
      */
-    protected function resolveErrors(array $parameters = [])
+    protected function resolveErrors($parameters = [])
     {
         $this->errorBag = new MessageBag();
 
