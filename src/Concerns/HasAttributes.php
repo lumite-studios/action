@@ -80,12 +80,11 @@ trait HasAttributes
      * Get an attribute.
      *
      * @param string $key
-     * @param mixed $default
      * @return mixed
      */
-    public function get(string $key, mixed $default = null): mixed
+    public function get(string $key): mixed
     {
-        return $this->attributes->get($key, $default);
+        return $this->attributes->get($key);
     }
 
     /**
