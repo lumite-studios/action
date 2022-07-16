@@ -89,13 +89,38 @@ trait HasAttributes
     }
 
     /**
-     * Magic method to get an attribute.
+     * Set an attribute.
      *
-     * @param $key
+     * @param string $key
+     * @param mixed $value
      * @return mixed
      */
-    public function __get(string $key): mixed
+    public function set(string $key, mixed $value): mixed
     {
-        return $this->get($key);
+        return $this->attributes->put($key, $value);
+    }
+
+    /**
+     * Magic method to get an attribute.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function __get(string $key, mixed $default = null): mixed
+    {
+        return $this->get($key, $default);
+    }
+
+    /**
+     * Magic method to get an attribute.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public function __set(string $key, mixed $value): void
+    {
+        $this->set($key, $value);
     }
 }
