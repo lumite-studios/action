@@ -5,7 +5,7 @@ use LumiteStudios\Action\Action;
 test('must have a handle function', function () {
     expect(fn () => new class extends Action
     {
-    })->toThrow(\Archwardens\Exceptions\ActionException::class);
+    })->toThrow(\LumiteStudios\Action\Exceptions\ActionException::class);
 });
 
 class ActionWithAsControllerMethod extends Action

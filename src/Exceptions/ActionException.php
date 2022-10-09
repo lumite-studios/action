@@ -9,9 +9,9 @@ class ActionException extends Exception
     /**
      * A "handle" method was not defined on the action.
      *
-     * @return \Archwardens\Exceptions\ActionException
+     * @return \LumiteStudios\Action\Exceptions\ActionException
      */
-    public static function missingHandle(): \Archwardens\Exceptions\ActionException
+    public static function missingHandle(): self
     {
         return new self('There is no [handle] method.');
     }

@@ -2,13 +2,13 @@
 
 namespace LumiteStudios\Action;
 
-use ReflectionMethod;
 use Illuminate\Support\Str;
-use LumiteStudios\Action\Concerns\HasErrors;
-use LumiteStudios\Action\Concerns\HasAttributes;
-use LumiteStudios\Action\Concerns\HasValidation;
 use LumiteStudios\Action\Concerns\ActionDecorator;
+use LumiteStudios\Action\Concerns\HasAttributes;
+use LumiteStudios\Action\Concerns\HasErrors;
+use LumiteStudios\Action\Concerns\HasValidation;
 use LumiteStudios\Action\Exceptions\ActionException;
+use ReflectionMethod;
 
 class Action
 {
@@ -16,6 +16,13 @@ class Action
         HasAttributes,
         HasErrors,
         HasValidation;
+
+    /**
+     * The name of the "data" attribute to ignore.
+     *
+     * @var string
+     */
+    protected string $dataAttribute = 'data';
 
     /**
      * The request to use for validation.
@@ -81,7 +88,7 @@ class Action
      * @param mixed ...$parameters
      * @return void
      *
-     * @throws \Archwardens\Exceptions\ActionException
+     * @throws \LumiteStudios\Action\Exceptions\ActionException
      */
     public function call(string $method = 'handle', ...$parameters)
     {
@@ -89,7 +96,15 @@ class Action
             $this->validate();
         }
 
-        return $this->returnResponse($this->run($method, $parameters));
+        return $this->returnResponse($this->resolveFromRouteAndCall($method, $parameters));
+    }
+
+    /**
+     * @return static
+     */
+    public static function make()
+    {
+        return app(static::class);
     }
 
     /**
@@ -98,11 +113,9 @@ class Action
      * @param string $method
      * @return mixed
      */
-    protected function run(string $method, array $parameters = [])
+    public static function run(...$arguments)
     {
-        if ($this->hasMethod($method)) {
-            return $this->resolveFromRouteAndCall($method, $parameters);
-        }
+        return static::make()->handle(...$arguments);
     }
 
     /**
@@ -187,10 +200,13 @@ class Action
     protected function resolveArgumentOrder(string $method, array $arguments): \Illuminate\Support\Collection
     {
         return collect((new ReflectionMethod($this, $method))->getParameters())->mapWithKeys(function ($param) use ($arguments) {
-            $classname = $param->getType()->getName();
-            return [$param->getName() => collect($arguments)->filter(function ($arg) use ($classname) {
-                return $arg instanceof $classname;
-            })->first()];
+            if($param->getName() !== $this->dataAttribute) {
+                $classname = $param->getType()->getName();
+                return [$param->getName() => collect($arguments)->filter(function ($arg) use ($classname) {
+                    return $arg instanceof $classname;
+                })->first()];
+            }
+            return [];
         });
     }
 }
