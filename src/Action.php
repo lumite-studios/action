@@ -2,6 +2,7 @@
 
 namespace LumiteStudios\Action;
 
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
 use LumiteStudios\Action\Concerns\ActionDecorator;
 use LumiteStudios\Action\Concerns\HasAttributes;
@@ -10,7 +11,7 @@ use LumiteStudios\Action\Concerns\HasValidation;
 use LumiteStudios\Action\Exceptions\ActionException;
 use ReflectionMethod;
 
-class Action
+class Action extends Controller
 {
     use ActionDecorator,
         HasAttributes,
@@ -76,7 +77,7 @@ class Action
      * @param array $parameters
      * @return mixed
      */
-    public function callAction(string $method, array $parameters): mixed
+    public function callAction($method, $parameters): mixed
     {
         return $this->call($method, $parameters);
     }
