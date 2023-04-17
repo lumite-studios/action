@@ -47,7 +47,10 @@ trait HasAttributes
     {
         $fromRoute = array_merge(
             $this->route ? $this->route->parametersWithoutNulls() : [],
-            $this->request->all(),
+            $this->request->only($this->hasMethod('rules')
+                ? array_keys($this->rules())
+                : []
+            ),
         );
 
         $this->fill(collect($fromRoute)->except($this->ignore));
