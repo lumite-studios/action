@@ -17,7 +17,7 @@ trait HasAttributes
 
     /**
      * The attributes to use within the action.
-     * @var array
+     * @var \Illuminate\Support\Collection
      */
     protected Collection $attributes;
 

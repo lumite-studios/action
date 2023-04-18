@@ -52,7 +52,7 @@ trait HasValidation
      *
      * @return mixed
      */
-    private function resolveAuthorization()
+    protected function resolveAuthorization()
     {
         if (!$this->authorize()) {
             return $this->failedAuthorization();
@@ -76,7 +76,7 @@ trait HasValidation
      *
      * @return mixed
      */
-    private function resolveValidation()
+    protected function resolveValidation()
     {
         $validator = \Illuminate\Support\Facades\Validator::make(
             $this->fromMethod('all', [], []),

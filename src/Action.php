@@ -141,7 +141,7 @@ class Action extends Controller
      *
      * @return void
      */
-    private function replaceRouteAction(): void
+    protected function replaceRouteAction(): void
     {
         if (!isset($this->route->action['uses'])) {
             return;
@@ -164,7 +164,7 @@ class Action extends Controller
      *
      * @return string
      */
-    private function getDefaultRouteMethod(): string
+    protected function getDefaultRouteMethod(): string
     {
         if ($this->hasMethod('asController')) {
             return 'asController';
@@ -180,7 +180,7 @@ class Action extends Controller
      * @param array $parameters
      * @return mixed
      */
-    private function resolveFromRouteAndCall(string $method, array $parameters = []): mixed
+    protected function resolveFromRouteAndCall(string $method, array $parameters = []): mixed
     {
         $arguments = $this->route ? $this->route->resolveMethodDependencies(
             $this->route->parametersWithoutNulls() ?? $parameters,
